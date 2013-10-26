@@ -9,6 +9,6 @@ Running
 
 run Neural_Network_Driver.java to train the Neural Network
 
-run MEMM_Driver to train the Maximum Entropy Markov Model
+run MEMM_Driver.java to train the Maximum Entropy Markov Model
 
 
