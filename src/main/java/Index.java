@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Index {
 
-  List objects = new ArrayList();
-  Map<Object,Integer> indexes = new HashMap<Object,Integer>();
+  List<Object> objects = new ArrayList<>();
+  Map<Object,Integer> indexes = new HashMap<>();
 
   public boolean add(Object o) {
     Integer index = indexes.get(o);

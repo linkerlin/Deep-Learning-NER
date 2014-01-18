@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.out;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -36,7 +38,7 @@ public class MEMM
 		{
 			for (final Datum datum : testData)
 			{
-				System.out.println(base64decode(datum.word) + "\t" + datum.label + "\t" + datum.guessLabel);
+				out.println(base64decode(datum.word) + "\t" + datum.label + "\t" + datum.guessLabel);
 			}
 		}
 
@@ -45,12 +47,12 @@ public class MEMM
 		{
 			for (final Datum datum : testData)
 			{
-				System.out.println("+++" + base64decode(datum.word) + "\t" + datum.guessLabel);
+				out.println("+++" + base64decode(datum.word) + "\t" + datum.guessLabel);
 			}
 			return;
 		}
 
-		System.out.println();
+		out.println();
 		Scorer.score(testData);
 
 	}
@@ -72,7 +74,7 @@ public class MEMM
 			testData.add(testDataWithMultiplePrevLabels.get(i));
 		}
 
-		final QNMinimizer minimizer = new QNMinimizer(15);
+		final Quasi_Newton_Minimiser minimizer = new Quasi_Newton_Minimiser(15);
 		final double[][] weights = obj.to2D(minimizer.minimize(obj, 1e-4, initial, -1, null));
 
 		final Viterbi viterbi = new Viterbi(obj.labelIndex, obj.featureIndex, weights);

@@ -10,28 +10,7 @@ public class NER
 
 	public static void main(final String[] args) throws IOException
 	{
-		if (args.length < 2)
-		{
-			System.out.println("USAGE: java -cp classes NER ../data/train ../data/dev");
-			return;
-		}
-
-		String print = "";
-		if (args.length > 2 && args[2].equals("-print"))
-		{
-			print = "-print";
-		}
-
-		final FeatureFactory ff = new FeatureFactory();
-		final List<Datum> trainData = ff.readData(args[0]);
-		final List<Datum> testData = ff.readData(args[1]);
-
-		// // read the train and test data
-		ff.readWordVectors(System.getProperty("user.dir") + "/src/main/resources/" + "wordVectors.txt", System.getProperty("user.dir")
-				+ "/src/main/resources/" + "vocab.txt");
-		final WindowModel model = new WindowModel(ff, 5, 100, 0.001);
-		model.train(trainData);
-		model.test(testData);
+		train_and_test(args);
 
 		// // add the features
 		// List<Datum> trainDataWithFeatures = ff.setFeaturesTrain(trainData);
@@ -54,5 +33,31 @@ public class NER
 		// line = br.readLine();
 		// }
 
+	}
+
+	public static String train_and_test(final String[] args) throws IOException
+	{
+		if (args.length < 2)
+		{
+			System.out.println("USAGE: java -cp classes NER ../data/train ../data/dev");
+			return "";
+		}
+
+		String print = "";
+		if (args.length > 2 && args[2].equals("-print"))
+		{
+			print = "-print";
+		}
+
+		final FeatureFactory ff = new FeatureFactory();
+		final List<Datum> trainData = ff.readData(args[0]);
+		final List<Datum> testData = ff.readData(args[1]);
+
+		// // read the train and test data
+		FeatureFactory.Data data = ff.readWordVectors(System.getProperty("user.dir") + "/src/main/resources/" + "wordVectors.txt", System.getProperty("user.dir")
+				+ "/src/main/resources/" + "vocab.txt");
+		final WindowModel model = new WindowModel(data, 5, 100, 0.001);
+		model.train(trainData);
+		return model.test(testData);
 	}
 }

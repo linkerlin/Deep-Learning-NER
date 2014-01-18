@@ -1,101 +1,110 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import static java.lang.Double.parseDouble;
 
-import org.ejml.simple.*;
-import org.ejml.data.*;
-import org.ejml.ops.*;
+import org.ejml.simple.SimpleMatrix;
 
+public class FeatureFactory
+{
+	static class Data
+	{
+		public Data(Map[] vocabulary, SimpleMatrix vectors_from)
+		{
+			wordToNum = vocabulary[0];
+			numToWord = vocabulary[1];
+			allVecs = vectors_from;
+		}
 
-public class FeatureFactory {
-	HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
-	HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
-	SimpleMatrix allVecs;
-	
-	
-	
-	
-	/** Add any necessary initialization steps for your features here.
-	 *  Using this constructor is optional. Depending on your
-	 *  features, you may not need to intialize anything.
-	 */
-	public FeatureFactory() {
-
+		Map<String, Integer> wordToNum;
+		Map<Integer, String> numToWord;
+		SimpleMatrix allVecs;
 	}
 
+	public List<Datum> readData(String filename) throws IOException
+	{
+		List<Datum> data = new ArrayList<>();
 
-
-
-	/** Do not modify this method **/
-	public List<Datum> readData(String filename) throws IOException {
-
-		List<Datum> data = new ArrayList<Datum>();
-		BufferedReader in = new BufferedReader(new FileReader(filename));
-
-		for (String line = in.readLine(); line != null; line = in.readLine()) {
-			if (line.trim().length() == 0) {
-				continue;
+		try (Scanner scanner = new Scanner(new File(filename)))
+		{
+			while (scanner.hasNextLine())
+			{
+				String nextLine = scanner.nextLine().trim();
+				if (nextLine.isEmpty())
+					continue;
+				String[] bits = nextLine.split("\\s+");
+				String word = bits[0];
+				String label = bits[1];
+				data.add(new Datum(word, label));
 			}
-			String[] bits = line.split("\\s+");
-			String word = bits[0];
-			String label = bits[1];
-
-			Datum datum = new Datum(word, label);
-			data.add(datum);
 		}
 
 		return data;
 	}
 
+	public Data readWordVectors(String vecFilename, String vocabFilename) throws IOException
+	{
+		Map[] vocabulary = vocabulary_from(vocabFilename);
 
-
-
-
-	/** Do not modify this method **/
-	public void readWordVectors(String vecFilename,String vocabFilename) throws IOException {
-		// could be a parameter 
-		int vectorSize = 50;
-		
-		// reading in vocab list
-		BufferedReader in = new BufferedReader(new FileReader(vocabFilename));
-		int counter = 0;
-		for (String line = in.readLine(); line != null; line = in.readLine()) {
-			String[] bits = line.split("\\s+");
-			String word = bits[0];
-			wordToNum.put(word, counter); 
-			numToWord.put(counter,word);
-			counter++;
-		}
-		
-		// reading in matrix
-		allVecs = new SimpleMatrix(50, counter);
-		in = new BufferedReader(new FileReader(vecFilename));
-		counter = 0;
-		for (String line = in.readLine(); line != null; line = in.readLine()) {
-			String[] bits = line.split("\\s+");
-			for (int pos=0;pos<vectorSize;pos++){ 
-				allVecs.set(pos, counter, Double.parseDouble(bits[pos]));		
-			}
-			counter++;
-		}
-		assert(counter == wordToNum.size());
-
+		return new Data(vocabulary, vectors_from(vecFilename, vocabulary[0].size()));
 	}
 
+	private Map[] vocabulary_from(String vocabFilename) throws FileNotFoundException
+	{
+		int counter = 0;
 
+		Map<String, Integer> wordToNum = new HashMap<>();
+		Map<Integer, String> numToWord = new HashMap<>();
 
+		try (Scanner scanner = new Scanner(new File(vocabFilename)))
+		{
+			while (scanner.hasNextLine())
+			{
+				String nextLine = scanner.nextLine().trim();
+				if (nextLine.isEmpty())
+					continue;
+				String[] bits = nextLine.split("\\s+");
+				String word = bits[0];
+				wordToNum.put(word, counter);
+				numToWord.put(counter, word);
+				counter++;
+			}
+		}
+		return new Map[] { wordToNum, numToWord };
+	}
 
+	SimpleMatrix vectors_from(String vector_file, int columns) throws FileNotFoundException
+	{
+		int VECTOR_SIZE = 50;
+		SimpleMatrix allVecs = new SimpleMatrix(VECTOR_SIZE, columns);
+		int counter = 0;
 
+		try (Scanner scanner = new Scanner(new File(vector_file)))
+		{
+			while (scanner.hasNextLine())
+			{
+				String nextLine = scanner.nextLine().trim();
 
+				if (nextLine.isEmpty())
+					continue;
 
+				String[] bits = nextLine.split("\\s+");
+				for (int pos = 0; pos < VECTOR_SIZE; pos++)
+				{
+					allVecs.set(pos, counter, parseDouble(bits[pos]));
+				}
 
+				counter++;
+			}
+		}
 
+		return allVecs;
+	}
 
 }

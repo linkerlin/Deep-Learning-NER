@@ -76,7 +76,7 @@ import java.util.List;
  * @author akleeman
  */
 
-public class QNMinimizer {
+public class Quasi_Newton_Minimiser {
 
   public int fevals = 0; // the number of function evaluations
   private int maxFevals = -1;
@@ -121,7 +121,7 @@ public class QNMinimizer {
   eScaling scaleOpt = eScaling.DIAGONAL;// eScaling.DIAGONAL;
   eState state = eState.CONTINUE;
 
-  public QNMinimizer(int m) {
+  public Quasi_Newton_Minimiser(int m) {
     mem = m;
   }
 
