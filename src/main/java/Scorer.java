@@ -4,8 +4,8 @@ public class Scorer {
 
   public static void score(List<Datum> data) {
 
-    Set<Pair> trueEntities = new HashSet();
-    Set<Pair> guessEntities = new HashSet();
+    Set<Pair> trueEntities = new HashSet<>();
+    Set<Pair> guessEntities = new HashSet<>();
     
     String prevLabel = "O";
     int start = 0;
@@ -38,7 +38,7 @@ public class Scorer {
       prevLabel = label;
     }
 
-    Set<Pair> s = new HashSet(trueEntities);
+    Set<Pair> s = new HashSet<>(trueEntities);
     s.retainAll(guessEntities);
 
     int tp = s.size();

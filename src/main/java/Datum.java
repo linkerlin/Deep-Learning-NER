@@ -2,7 +2,6 @@ import java.util.List;
 
 public class Datum
 {
-
 	@Override public String toString()
 	{
 		return "Datum [word=" + word + ", label=" + label + ", features=" + features + ", guessLabel=" + guessLabel + ", previousLabel="
